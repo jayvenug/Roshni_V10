@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Add Refund lines in Refund Form view -->
+     <record id="view_account_invoice_refund_inherited" model="ir.ui.view">
+        <field name="name">account.invoice.refund.form</field>
+        <field name="model">account.invoice.refund</field>
+        <field name="inherit_id" ref="account.view_account_invoice_refund"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group" position="after">
+                <notebook>
+                    <page name="refund_lines" string="Refund Lines">
+                        <field name="refund_line_ids">
+                            <tree editable="top">
+                                <field name="product_id" readonly="1"/>
+                                <field name="name" readonly="1"/>
+                                <field name="invoiced_qty" readonly="1"/>
+                                <field name="refund_qty"/>
+                                <field name="invoice_refund_id" invisible="1"/>
+                                <field name="invoice_line_id" invisible="1"/>
+                            </tree>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+            <xpath expr="//button[@name='invoice_refund']" position="replace">
+                 <button string='Create Refund' name="invoice_refund" type="object" class="btn-primary" context="{'refund_line_ids' : refund_line_ids }"/>
+             </xpath>
+        </field>
+    </record>
+</odoo>
