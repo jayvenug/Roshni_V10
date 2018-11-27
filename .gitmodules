@@ -2,3 +2,8 @@
 	path = jayvenug/Roshni
 	url = git@github.com:jayvenug/Roshni.git
 	branch = jayvenug-patch-1
+
+[submodule "jayvenug/Roshni_V10"]
+	path = jayvenug/Roshni_V10
+	url = git@github.com:jayvenug/Roshni.git
+	branch = jayvenug-patch-1
