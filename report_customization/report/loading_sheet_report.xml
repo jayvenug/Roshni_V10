@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <template id="report.assets_common_custom" name="account assets" inherit_id="report.assets_common">
+            <xpath expr="." position="inside">
+                <link rel="stylesheet" href="/report_customization/static/src/less/report_custom.less" type="text/less"/>
+            </xpath>
+        </template>
+
+        <template id="external_layout_header_loading_sheet">
+            <div class="header">
+                <div class="row" style="font-size:16px;">
+                    <div class="col-xs-12 text-center" name="company_address">
+                        <strong><span style="font-size:24px;" t-field="company.partner_id.name"/></strong><br/>
+                        <span t-field="company.partner_id.street"/> - <span t-field="company.partner_id.zip"/><br/>
+                        <span>MOBILES : </span><span t-field="company.partner_id.mobile"/><br/>
+                        <span t-field="company.partner_id.street2"/>, <span t-field="company.partner_id.city"/> , PHONE <span t-field="company.partner_id.phone"/> FAX: <span t-field="company.partner_id.fax"/>
+                    </div>
+                </div>
+            </div>
+        </template>
+
+        <template id="external_layout_footer_loading_sheet">
+            <div class="footer">
+                <div class="text-center" style="border-top: 1px solid black;">
+                    <ul class="list-inline">
+                        <li><strong>Customer: </strong><t t-esc="doc.partner_id.name"/> </li>
+                        <li><strong>Order No: </strong><t t-esc="doc.name"/> </li>
+                        <li><strong>Page: </strong></li>
+                        <li><span class="page"/></li>
+                        <li>/</li>
+                        <li><span class="topage"/></li>
+                     </ul>
+                </div>
+            </div>
+        </template>
+
+        <template id="external_layout_loading_sheet">
+            <!-- Multicompany -->
+            <t t-if="not o and doc">
+                <t t-set="o" t-value="doc"/>
+            </t>
+            <t t-if="o and 'company_id' in o">
+                <t t-set="company" t-value="o.company_id"></t>
+            </t>
+            <t t-if="not o or not 'company_id' in o">
+                <t t-set="company" t-value="res_company"></t>
+            </t>
+
+            <t t-call="report_customization.external_layout_header_loading_sheet" />
+            <t t-raw="0" />
+            <t t-call="report_customization.external_layout_footer_loading_sheet" />
+        </template>
+
+        <template id="report_loading_sheet_document">
+            <t t-call="report_customization.external_layout_loading_sheet">
+                <t t-set="doc" t-value="doc.with_context({'lang':doc.partner_id.lang})" />
+                <div class="page" style="font-size:16px;">
+                    <div class="oe_structure"/>
+
+                    <div class="row mb32">
+                        <div class="col-xs-4">
+                            <strong>Customer: </strong><span t-field="doc.partner_id.name"/>
+                        </div>
+                        <div class="col-xs-4" style="margin-top:-5px;">
+                            <strong style="font-size:24px;padding-left:30px;">LOADING SHEET</strong>
+                            <br/>
+                            <br/>
+                            <strong><span> Order No.: <t t-esc="doc.name"/></span></strong><br/>
+                            <strong><span>Delivery Address:</span></strong><br/>
+                            <strong>
+                                <t t-if="doc.partner_id.street">
+                                    <span t-field="doc.partner_id.street"/>,
+                                </t>
+                                <t t-if="doc.partner_id.street2">
+                                    <span t-field="doc.partner_id.street2"/>,
+                                </t>
+                                <t t-if="doc.partner_id.zip">
+                                    <span t-field="doc.partner_id.zip"/>
+                                </t><br/>
+                                <t t-if="doc.partner_id.city">
+                                    <span t-field="doc.partner_id.city"/>,
+                                </t>
+                                <t t-if="doc.partner_id.state_id">
+                                    <span t-field="doc.partner_id.state_id.name"/>
+                                </t>
+                                <br/>
+                                <t t-if="doc.partner_id.country_id">
+                                    <span t-field="doc.partner_id.country_id.name"/>,
+                                </t>
+                                <br/>
+                                <span>Contact:</span>
+                            </strong>
+                        </div>
+                        <div class="col-xs-4 text-right">
+                            <span>Date:   </span><span t-field="doc.date_order" t-field-options='{"format": "d-MMM-y"}'/>
+                        </div>
+                    </div>
+
+                    <t t-set="line_count" t-value="0"/>
+                    <t t-foreach="doc.order_lines_layouted()" t-as="page">
+                        <table class="table table-condensed table-custom">
+                            <thead>
+                                <tr>
+                                    <th style="border-left: 2px solid black;width:20%;"><u><strong>PRODUCT CODE</strong></u></th>
+                                    <th style="border-left: 2px solid black;border-right: 2px solid black;"><u>DESCRIPTION</u></th>
+                                    <th style="border-left: 2px solid black;border-right: 2px solid black;" class="text-center"><u>QTY</u></th>
+                                    <th style="border-right: 2px solid black;" class="text-center"><u>UoM</u></th>
+                                </tr>
+                           </thead>
+                           <tbody class="sale_tbody">
+                                <t t-foreach="page" t-as="layout_category">
+
+                                    <t t-if="layout_category_size > 1 or page_size > 1" groups="sale.group_sale_layout">
+                                        <tr class="active">
+                                            <td colspan="7" style="font-weight: bold; border-bottom: 1px solid black;">&amp;bull;
+                                                <t t-esc="layout_category['name']"/>
+                                            </td>
+                                        </tr>
+                                    </t>
+
+                                    <!-- Lines associated -->
+                                    <t t-foreach="layout_category['lines']" t-as="l">
+                                        <t t-set="line_count" t-value="line_count+1"/>
+                                        <tr>
+                                            <td style="border-left: 2px solid black;border-right: 2px solid black;"><span t-field="l.product_id.default_code"/></td>
+                                            <td style="border-left: 2px solid black;border-right: 2px solid black;"><span t-field="l.name"/></td>
+                                            <td class="text-center" style="border-left: 2px solid black;border-right: 2px solid black;">
+                                                <span t-field="l.product_uom_qty"/>
+                                            </td>
+                                            <td class="text-center" style="border-right: 2px solid black;">
+                                                <strong><span t-field="l.product_uom.general_name"/></strong>
+                                            </td>
+                                        </tr>
+                                    </t>
+                                </t>
+                                <tr>
+                                    <td style="border-left: 2px solid black;border-right: 2px solid black;"></td>
+                                    <td class="text-left" style="border-left: 2px solid black;border-right: 2px solid black;">
+                                        <strong>Total Lines</strong>
+                                    </td>
+                                    <td class="text-left" style="border-left: 2px solid black;border-right: 2px solid black;">
+                                        <strong t-esc="line_count"/>
+                                    </td>
+                                    <td class="text-center" style="border-right: 2px solid black;">
+                                        
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border-left: 2px solid black;border-right: 2px solid black;"></td>
+                                    <td class="text-left" style="border-left: 2px solid black;border-right: 2px solid black;">
+                                        <strong>Invoice Amount</strong>
+                                    </td>
+                                    <td class="text-left" style="border-left: 2px solid black;border-right: 2px solid black;">
+                                        <strong t-field="doc.amount_total"/>
+                                    </td>
+                                    <td class="text-center" style="border-right: 2px solid black;">
+                                        
+                                    </td>
+                                </tr>
+                                
+                            </tbody>
+
+                            <tfoot>
+                                <tr style="border-style: solid;border-width: 2px 2px 2px 2px;border-color: white;">
+                                    <td style="border-top: 2px solid black;"></td>
+                                    <td style="border-top: 2px solid black;"></td>
+                                    <td class="text-right" style="border-top: 2px solid black;">
+                                    </td>
+                                    <td class="text-center" style="border-top: 2px solid black;">
+                                    </td>
+                                </tr>
+                            </tfoot>
+                            
+                        </table>
+
+                        <t t-if="page_index &lt; page_size - 1" groups="sale.group_sale_layout">
+                            <p style="page-break-before:always;"> </p>
+                        </t>
+                    </t>
+
+                    <div class="row mt32">
+                        <div class="col-xs-3" >
+                            <span>Vehicle Number</span>
+                            <div style="border: 2px solid black;height: 60px;">
+                            </div>
+                            
+                        </div>
+                        <div class="col-xs-3">
+                            <span>Driver Name</span>
+                            <div style="border: 2px solid black;height: 60px;">
+                            </div>
+                            
+                        </div>
+                        <div class="col-xs-3">
+                            <span>Loader 1</span>
+                            <div style="border: 2px solid black;height: 60px;">
+                            </div>
+                            
+                        </div>
+                        <div class="col-xs-3">
+                            <span>Loader 2</span>
+                            <div style="border: 2px solid black;height: 60px;">
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </t>
+        </template>
+
+
+        <template id="report_loadingsheet">
+            <t t-call="report.html_container">
+                <t t-foreach="docs" t-as="doc">
+                    <t t-call="report_customization.report_loading_sheet_document" t-lang="doc.partner_id.lang"/>
+                </t>
+            </t>
+        </template>
+
+
+        <report 
+            id="report_loading_sheet"
+            string="Loading Sheet"
+            model="sale.order" 
+            report_type="qweb-pdf"
+            file="report_customization.report_loadingsheet" 
+            name="report_customization.report_loadingsheet" 
+        />
+    </data>
+</odoo>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <record id="view_order_form_inh1" model="ir.ui.view">
+            <field name="name">sale.order.form.inh</field>
+            <field name="model">sale.order</field>
+            <field name="inherit_id" ref="sale.view_order_form"/>
+            <field name="arch" type="xml">
+                <button name="print_quotation" position="after">
+                    <button name="print_loading_sheet" string="Print Loading Sheet" type="object"/>
+                </button>
+                <field name="client_order_ref" position="replace">
+                </field>
+                <field name="payment_term_id" position="after">
+                    <field name="client_order_ref"/>
+                </field>
+            </field>
+        </record>
+
+        <menuitem action="sale.action_orders" name="Loading Sheet"
+            id="sale.menu_sale_order" parent="sales_team.menu_sales"
+            sequence="12" groups="sales_team.group_sale_salesman,sales_team.group_sale_manager"/>
+
+
+        <record id="invoice_form_custom" model="ir.ui.view">
+            <field name="name">account.invoice.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_form"/>
+            <field name="arch" type="xml">
+                <button name="invoice_print" position="replace">
+                </button>
+                <button name="invoice_print" position="replace">
+                </button>
+                <button name="action_invoice_sent" position="after">
+                    <button name="custom_invoice_print" string="Print" type="object" attrs="{'invisible':['|',('sent','=',True), ('state', '!=', 'open')]}" class="oe_highlight" groups="base.group_user"/>
+                    <button name="custom_invoice_print" string="Print Invoice" type="object" attrs="{'invisible':['|',('sent','=',False), ('state', '!=', 'open')]}" groups="base.group_user"/>
+                </button>
+                <field name="date_invoice" position="after">
+                    <field name="vehicle_number"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="invoice_supplier_form_custom" model="ir.ui.view">
+            <field name="name">account.invoice.supplier.form</field>
+            <field name="model">account.invoice</field>
+            <field name="inherit_id" ref="account.invoice_supplier_form"/>
+            <field name="arch" type="xml">
+                <field name="move_id" position="after">
+                    <field name="custom_entry_number"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="product_uom_form_view_inh1" model="ir.ui.view">
+            <field name="name">product.uom.form</field>
+            <field name="model">product.uom</field>
+            <field name="inherit_id" ref="product.product_uom_form_view"/>
+            <field name="arch" type="xml">
+                <field name="name" position="after">
+                    <field name="general_name"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="view_batch_deposit_form_inher" model="ir.ui.view">
+            <field name="name">account.batch.deposit.form</field>
+            <field name="model">account.batch.deposit</field>
+            <field name="inherit_id" ref="account_batch_deposit.view_batch_deposit_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//button[@name='print_batch_deposit']" position="replace">
+                    <button name="report_customization.report_account_batch_deposit" string="Print"
+                        type="action" class="btn-primary"/>
+                </xpath>
+                <field name="journal_id" position="after">
+                    <field name="pay_in_slip"/>
+                </field>
+                <field name="communication" position="after">
+                    <field name="bank_acc_id" options="{'no_create': True}"/>
+                    <field name="branch"/>
+                </field>
+                <xpath expr="//field[@name='payment_ids']/form/group/group[2]/field[@name='communication']" position="after">
+                    <field name="bank_acc_id" options="{'no_create': True}"/>
+                    <field name="branch"/>
+                </xpath>
+            </field>
+        </record>
+
+	    <record id="view_partner_form_inh" model="ir.ui.view">
+            <field name="name"> res.partner.form.inh</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="category_id" position="after">
+                    <field name="customer_flag"/>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Sequences for sale.order -->
+        <record id="seq_dispatched_order" model="ir.sequence">
+            <field name="name">Dispatched Order</field>
+            <field name="code">dispatch.register</field>
+            <field name="prefix">DO/</field>
+            <field name="padding">4</field>
+        </record>
+
+    </data>
+</odoo>
